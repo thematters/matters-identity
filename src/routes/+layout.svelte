@@ -8,7 +8,7 @@
   </main>
 
   <footer>
-    © 2022 - 2023 Matters, Inc. All rights reserved. <a
+    © 2023 Matters, Inc. All rights reserved. <a
       href="https://Matters.Town"
       target="_blank"
       rel="noreferrer">Matters.Town</a

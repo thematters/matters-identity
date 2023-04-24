@@ -138,7 +138,10 @@ export function rasterize(svg, { scale = 1.0, width = 2000, height = 2000 } = {}
   // let resolve, reject;
   return new Promise((resolve, reject) => {
     const image = new Image();
-    image.onerror = reject;
+    image.onerror = function (err) {
+      console.error(`image.onerror:`, this, err);
+      reject(err);
+    };
     image.onload = () => {
       // const rect = svg.getBoundingClientRect();
       width /= window.devicePixelRatio;
