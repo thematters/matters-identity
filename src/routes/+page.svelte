@@ -25,8 +25,8 @@
   let dataSvgEl;
   async function downloadAsPng(event) {
     // console.log('event is:', event, dataSvgEl, data);
-    const blob = await rasterize(dataSvgEl, { scale: 1.25, width: 1200, height: 754 });
-    // const blob = await rasterize(dataSvgEl, { scale: 2, width: 3000, height: 1885 });
+    // const blob = await rasterize(dataSvgEl, { scale: 1.25, width: 1200, height: 754 });
+    const blob = await rasterize(dataSvgEl, { scale: 2, width: 3000, height: 1885 });
     // console.log(`got blob:`, blob);
     const blobUrl = URL.createObjectURL(blob);
     // console.log('got blobUrl:', blobUrl);
@@ -72,6 +72,14 @@
 </svelte:head>
 
 <h1>{PUBLIC_SITE_DESCRIPTION}</h1>
+<h3>慶祝 Matters.Town 上線，馬特市小鎮氣象一新，馬特市民的「專屬身份證」來啦！🎫</h3>
+{#if !data?.searchParams?.userName}
+  <p>
+    在第一行輸入你的 Matters ID，也就是個人主頁網址 @ 後面那一串（舉例：Matty 的 ID 是
+    hi176），第二行可以自由輸入你的暱稱、花名、綽號、社群頭銜或者任何你想被認識的身份。按下 enter
+    就可以囉！
+  </p>
+{/if}
 <section>
   <div id="frame">
     {#if data?.searchParams?.userName}
@@ -86,7 +94,7 @@
             id="userName"
             size={20}
             maxlength={20}
-            placeholder="Enter your userName from Matters.Town/@userName"
+            placeholder="輸入你的 Matters ID"
             pattern="[A-z0-9À-ž]+"
             min-length="2"
             bind:value={userName}
@@ -100,7 +108,7 @@
             id="alsoKnownAs"
             size={20}
             maxlength={20}
-            placeholder="also known as"
+            placeholder="自由輸入暱稱、綽號、頭銜等，也可以留白"
             bind:value={alsoKnownAs}
           />
         </div>
@@ -121,6 +129,16 @@
 </section>
 
 <style>
+  h1 {
+    margin: 0.25rem;
+  }
+  body {
+    font-family: Noto Sans CJK TC, PingFang TC, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+      Helvetica, Arial, Hiragino Sans GB, Heiti TC, Microsoft JhengHei, Microsoft YaHei UI,
+      Microsoft YaHei, sans-serif;
+    letter-spacing: 0em;
+  }
+
   section {
     display: flex;
     flex-direction: column;
@@ -134,7 +152,7 @@
     align-items: center;
     justify-content: center;
 
-    aspect-ratio: 2 / 1;
+    min-height: 5rem;
     width: 100%;
     /* background: teal; */
   }
@@ -145,20 +163,11 @@
     justify-content: center;
     margin: 0.5rem 0;
   }
-  @media (min-width: 768px) {
-    form {
-      flex-direction: row;
-      justify-content: space-evenly;
-    }
-    form .row {
-      justify-content: center;
-    }
-  }
   form .row input {
     font-size: 1.1rem;
     border: 1px solid #ccc;
     padding: 0.5rem 1rem;
-    width: 28rem;
+
     border: 1px solid black;
     border-radius: 0.5rem;
   }
@@ -180,7 +189,6 @@
     padding: 0.5rem 1rem;
     font-size: 16px;
     cursor: pointer;
-    width: 28rem;
     border-color: #ccc;
     color: #278e7b;
   }
@@ -190,5 +198,19 @@
   }
   .download-links {
     margin-bottom: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    form {
+      flex-direction: row;
+      justify-content: space-evenly;
+    }
+    form .row {
+      justify-content: center;
+    }
+    form .row input,
+    button.btn {
+      width: 24rem;
+    }
   }
 </style>
