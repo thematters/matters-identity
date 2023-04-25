@@ -3,6 +3,8 @@
   import { onMount } from 'svelte';
   // import { browser } from '$app/environment';
 
+  import { Telegram, Facebook, Twitter, Line } from 'svelte-share-buttons-component';
+
   // import { title, description, keywords, canonicalOrigin } from '$lib/consts';
   import {
     PUBLIC_CANONICAL_ORIGIN,
@@ -33,9 +35,11 @@
     const link = document.createElement('a');
     link.download = `${displayName ?? 'untitled'}.png`;
     link.href = blobUrl;
+    document.body.appendChild(link);
     link.click();
     // always revoke, avoid leaking
     URL.revokeObjectURL(blobUrl);
+    document.body.removeChild(link);
   }
 
   $: shareUrl = `${PUBLIC_CANONICAL_ORIGIN}/${$page.url.search}`;
@@ -51,6 +55,9 @@
       }
     })();
   });
+
+  const articleLink =
+    'https://matters.town/@hi176/387265-重要公告-matters-news-更換域名為-matters-town';
 </script>
 
 <svelte:head>
@@ -71,15 +78,38 @@
   <link rel="canonical" href={shareUrl} />
 </svelte:head>
 
-<h1>{PUBLIC_SITE_DESCRIPTION}</h1>
-<h3>慶祝 Matters.Town 上線，馬特市小鎮氣象一新，馬特市民的「專屬身份證」來啦！🎫</h3>
-{#if !data?.searchParams?.userName}
-  <p>
-    在第一行輸入你的 Matters ID，也就是個人主頁網址 @ 後面那一串（舉例：Matty 的 ID 是
-    hi176），第二行可以自由輸入你的暱稱、花名、綽號、社群頭銜或者任何你想被認識的身份。按下 enter
-    就可以囉！
-  </p>
-{/if}
+<header>
+  <h1>{PUBLIC_SITE_DESCRIPTION}</h1>
+  <h3>
+    <a href={articleLink} target="_blank">慶祝 Matters.Town 上線</a
+    >，馬特市小鎮氣象一新，馬特市民的「專屬身份證」來啦！🎫
+  </h3>
+  {#if !data?.searchParams?.userName}
+    <p>
+      在第一行輸入你的 Matters ID，也就是個人主頁網址 @ 後面那一串（舉例：Matty 的 ID 是
+      hi176），第二行可以自由輸入你的暱稱、花名、綽號、社群頭銜或者任何你想被認識的身份。按下 enter
+      就可以囉！
+    </p>
+  {:else}
+    <div class="tools-group">
+      <Twitter
+        class="share-button"
+        text={updatedTitle}
+        url={shareUrl}
+        hashtags="2022馬特市創作成就"
+        via="MattersLab"
+        related="MattersLab"
+      />
+      <Facebook class="share-button" quote={updatedTitle} url={shareUrl} />
+      <Telegram class="share-button" text={updatedTitle} url={shareUrl} />
+      <Line class="share-button" url={shareUrl} />
+      <a href="https://Matters.Town" target="_blank" rel="noreferrer" class="share-link"
+        ><div>回到 Matters</div></a
+      >
+    </div>
+  {/if}
+</header>
+
 <section>
   <div id="frame">
     {#if data?.searchParams?.userName}
@@ -118,17 +148,20 @@
       </form>
     {/if}
   </div>
-
-  {#if data?.searchParams?.userName}
-    <div class="row flex-1">
-      <div class="download-links">
-        <button class="btn" on:click={downloadAsPng}>下載截圖</button>
-      </div>
-    </div>
-  {/if}
 </section>
+{#if data?.searchParams?.userName}
+  <div class="row flex-1">
+    <div class="download-links">
+      <button class="btn" on:click={downloadAsPng}>下載截圖</button>
+    </div>
+  </div>
+{/if}
 
 <style>
+  header {
+    position: relative;
+    min-height: 16rem;
+  }
   h1 {
     margin: 0.25rem;
   }
@@ -152,9 +185,13 @@
     align-items: center;
     justify-content: center;
 
-    min-height: 5rem;
+    min-height: 15rem;
     width: 100%;
     /* background: teal; */
+  }
+  div#frame > :global(svg) {
+    width: 1200px;
+    height: 754px;
   }
 
   .row {
@@ -200,7 +237,31 @@
     margin-bottom: 1rem;
   }
 
+  .tools-group {
+    position: absolute;
+    right: 0;
+    bottom: 0.25rem;
+    margin: 0.5rem 0;
+    padding-top: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .tools-group > :global(* + *) {
+    margin-left: 0.5rem;
+  }
+  .tools-group :global(.share-button) {
+    margin-left: 0.5rem;
+  }
+  .tools-group a.share-link {
+    box-sizing: border-box;
+    border: 1px dotted #grey;
+  }
+
   @media (min-width: 768px) {
+    header {
+      min-height: 12rem;
+    }
     form {
       flex-direction: row;
       justify-content: space-evenly;
