@@ -155,20 +155,33 @@ export function rasterize(svg, { scale = 1.0, width = 2000, height = 2000 } = {}
 }
 
 export function* tryNextAvatarFormat(src) {
+  const isLegacyUrl = src.startsWith('https://assets.matters.news/');
+  const isCloudflareImageUrl = src.startsWith(
+    'https://imagedelivery.net/kDRCweMmqLnTPNlbum-pYA/prod',
+  );
+
+  if (isCloudflareImageUrl) {
+    yield src.replace(/public$/, '540w');
+    yield src.replace(/public$/, '360w');
+    yield src;
+  }
+
   // some old examples: 'avatar/c98ec27c-c870-40ed-8cf4-eceaa950af2f/asset-KtxI.jpeg'
-  let filename = src.replace('https://assets.matters.news/', ''); // src.split('/').slice(-1)[0];
+  let filename = isLegacyUrl ? src.replace('https://assets.matters.news/', '') : src; // src.split('/').slice(-1)[0];
 
-  // 'https://matters.town/cdn-cgi/imagedelivery/kDRCweMmqLnTPNlbum-pYA/prod/avatar/c98ec27c-c870-40ed-8cf4-eceaa950af2f/asset-KtxI.jpeg/540w'
-  yield `https://matters.town/cdn-cgi/imagedelivery/kDRCweMmqLnTPNlbum-pYA/prod/${filename}/540w`;
-  yield `https://matters.town/cdn-cgi/imagedelivery/kDRCweMmqLnTPNlbum-pYA/prod/${filename}/360w`;
+  if (isLegacyUrl) {
+    // 'https://matters.town/cdn-cgi/imagedelivery/kDRCweMmqLnTPNlbum-pYA/prod/avatar/c98ec27c-c870-40ed-8cf4-eceaa950af2f/asset-KtxI.jpeg/540w'
+    yield `https://matters.town/cdn-cgi/imagedelivery/kDRCweMmqLnTPNlbum-pYA/prod/${filename}/540w`;
+    yield `https://matters.town/cdn-cgi/imagedelivery/kDRCweMmqLnTPNlbum-pYA/prod/${filename}/360w`;
 
-  // 'https://imagedelivery.net/kDRCweMmqLnTPNlbum-pYA/prod/avatar/0633ba18-f161-4f91-8459-bdb2ac9d4f67.jpeg/public'
-  yield `https://imagedelivery.net/kDRCweMmqLnTPNlbum-pYA/prod/${filename}/540w`;
-  yield `https://imagedelivery.net/kDRCweMmqLnTPNlbum-pYA/prod/${filename}/360w`;
-  // yield `https://imagedelivery.net/kDRCweMmqLnTPNlbum-pYA/prod/avatar/${filename}/144w`;
+    // 'https://imagedelivery.net/kDRCweMmqLnTPNlbum-pYA/prod/avatar/0633ba18-f161-4f91-8459-bdb2ac9d4f67.jpeg/public'
+    yield `https://imagedelivery.net/kDRCweMmqLnTPNlbum-pYA/prod/${filename}/540w`;
+    yield `https://imagedelivery.net/kDRCweMmqLnTPNlbum-pYA/prod/${filename}/360w`;
+    // yield `https://imagedelivery.net/kDRCweMmqLnTPNlbum-pYA/prod/avatar/${filename}/144w`;
 
-  yield `https://assets.matters.news/processed/540w/${filename.replace(/.\w+$/, '.webp')}`;
-  yield `https://assets.matters.news/processed/360w/${filename.replace(/.\w+$/, '.webp')}`;
+    yield `https://assets.matters.news/processed/540w/${filename.replace(/.\w+$/, '.webp')}`;
+    yield `https://assets.matters.news/processed/360w/${filename.replace(/.\w+$/, '.webp')}`;
+  }
 
   yield src.replace(/avatar/, 'processed/540w/avatar').replace(/.\w+$/, '.webp');
   yield src.replace(/avatar/, 'processed/540w/avatar');
@@ -202,7 +215,7 @@ export function formatId(id) {
 
 const anonSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 72 72">
-  <g  fill-rule="evenodd">
+  <g fill-rule="evenodd">
     <circle fill="#E8C891" cx="36" cy="36.11" r="36"/>
     <path d="M17.53 26.51s-3.28 3.44-3.64 5.16c-.36 1.72 3.18 4 3.18 4s4.9-5.06.46-9.16z" fill="#FFF"/>
     <path d="M16.02 28.23s1.18 4.88-.85 6.67c0 0-3.71-.6-2.94-4.45.78-3.86 3.79-2.22 3.79-2.22z" fill="currentColor"/>
